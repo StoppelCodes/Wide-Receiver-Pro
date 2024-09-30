@@ -6,7 +6,7 @@ from sklearn.model_selection import LeaveOneOut, cross_val_score, KFold
 app = Flask(__name__)
 
 # Load your CSV data
-data = pd.read_csv("")# data path
+data = pd.read_csv("C:\\Users\\pauls\\Downloads\\NFL stats\\2023an2024week3.csv")# data path
 
 pass_data = data.dropna(subset=["air_yards"])
 air_yards_by_qb_game = pass_data.groupby(['game_id', 'passer_player_name'])['air_yards'].sum().reset_index()
