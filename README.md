@@ -13,4 +13,4 @@ GUI:
 GUI created in Flask
 
 Hosting:
-Hosted on Azure Cloud. 
+Hosted on Azure Cloud 
