@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFL Predictions</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin-top: 50px;
+            color: #333;
+        }
+        form {
+            display: inline-block;
+            margin-top: 30px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        input[type="text"], input[type="submit"] {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        #prediction-result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e6f7ff;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>NFL Receiving Yards Prediction</h1>
+    <form id="predictionForm">
+        <label for="player">Enter Player Name:</label>
+        <input type="text" id="player" name="player" required><br><br>
+        
+        <label for="defense">Enter Defense Team:</label>
+        <input type="text" id="defense" name="defense" required><br><br>
+        
+        <input type="submit" value="Predict">
+    </form>
+
+    <div id="prediction-result">
+        <h2>Prediction Result</h2>
+        <p id="player-name">Player: </p>
+        <p id="defense-name">Defense: </p>
+        <p id="predicted-yards">Predicted Yards: </p>
+    </div>
+
+    <div id="how-to-use-section" style="margin-top: 30px;"></div>
+        <h2>How to Use</h2>
+        <p>1. Enter the player's name in the 'Enter Player Name' field. Player first inital + . + Last name</p>
+        <p>2. Enter the opposing defense team in the 'Enter Defense Team' field. Defense city code such as NYG or SEA</p>
+        <p>3. Click 'Predict' to see the predicted receiving yards for the selected player against that defense.</p>
+    </div>
+
+    <div id="about-section" style="margin-top: 50px;">
+        <h2>About and Disclaimer</h2>
+        <p>This website predicts NFL receiving yards based on the player's performance and the opposing defense team using machine learning and data science tools.</p>
+        <p>This website is a for fun project created to learn new tools and skills and have some fun while applying those skills. This tool is not made for, and should not be used for gambling or sportsbetting in any way, shape, or form.</p>
+    </div>
+    
+    
+    <script>
+        $(document).ready(function() {
+           
+            $.ajax({
+                url: '/player-names',  
+                type: 'GET',
+                success: function(playerNames) {
+                    // Apply jQuery UI autocomplete with player names
+                    $("#player").autocomplete({
+                        source: playerNames
+                    });
+                },
+                error: function(error) {
+                    console.error("Error fetching player names:", error);
+                }
+            });
+        });
+
+        $(document).ready(function() {
+            // Fetch def
+            $.ajax({
+                url: '/defense-names', 
+                type: 'GET',
+                success: function(defenseNames) {
+                    
+                    $("#defense").autocomplete({
+                        source: defenseNames
+                    });
+                },
+                error: function(error) {
+                    console.error("Error fetching def name:", error);
+                }
+            });
+        });
+
+        // Submit form using AJAX to avoid page reload
+        $('#predictionForm').on('submit', function(event) {
+            event.preventDefault(); 
+
+            const player = $('#player').val();
+            const defense = $('#defense').val();
+
+            
+            $.ajax({
+                url: '/predict', 
+                type: 'POST',
+                data: { player: player, defense: defense }, // Send form data
+                success: function(response) {
+                    
+                    $('#player-name').text(`Player: ${response.player}`);
+                    $('#defense-name').text(`Defense: ${response.defense}`);
+                    $('#predicted-yards').text(`Predicted Yards: ${response.predicted_yards[0].toFixed(2)}`);
+
+                    $('#player').val('');
+                    $('#defense').val('');
+                },
+                error: function(error) {
+                    console.error("Error:", error);
+                    alert("An error occurred. Please check your server.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
