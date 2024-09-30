@@ -10,4 +10,7 @@ Machine Learning:
 Machine learning done in Python for more control over models. Models constantly being tested and changed for best performance
 
 GUI: 
-GUI created in Flask and hosted on azure cloud server. 
+GUI created in Flask
+
+Hosting:
+Hosted on Azure Cloud. 
