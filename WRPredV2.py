@@ -3,10 +3,18 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import LeaveOneOut, cross_val_score, KFold
+from azure.storage.blob import BlobServiceClient
 app = Flask(__name__)
 
-# Load your CSV data
-data = pd.read_csv("C:\\Users\\pauls\\Downloads\\NFL stats\\2023an2024week3.csv")# data path
+connect_str = "DefaultEndpointsProtocol=https;AccountName=wrpredictions;AccountKey=lPusoXB7+5o2d+iFT4RGTef0xc7L7uszVJMsByFoF3booTsM9lp5KptjxCX5HDC9ev7guVqUJFSj+AStw4tXqQ==;EndpointSuffix=core.windows.net"
+blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+
+container_name = "wrpred"
+blob_name = "2023an2024week3.csv" 
+
+blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+blob_data = blob_client.download_blob()
+data = pd.read_csv(io.BytesIO(blob_data.readall()))
 
 pass_data = data.dropna(subset=["air_yards"])
 air_yards_by_qb_game = pass_data.groupby(['game_id', 'passer_player_name'])['air_yards'].sum().reset_index()
